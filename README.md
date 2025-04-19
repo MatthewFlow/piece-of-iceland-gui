@@ -35,7 +35,7 @@
 
 ---
 
-📦 Installation
+## 📦 Installation
 
 ```bash
 bun install
