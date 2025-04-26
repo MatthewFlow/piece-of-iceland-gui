@@ -10,7 +10,12 @@ const tsConfigs = await tseslint.configs.recommended;
 
 export default [
   {
-    ignores: ['**/*.config.*', '**/vite.config.ts', '**/postcss.config.js', '**/tailwind.config.js'],
+    ignores: [
+      '**/*.config.*',
+      '**/vite.config.ts',
+      '**/postcss.config.js',
+      '**/tailwind.config.js',
+    ],
   },
   js.configs.recommended,
   ...tsConfigs,
