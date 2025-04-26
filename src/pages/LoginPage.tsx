@@ -6,14 +6,13 @@ import { useEmailValidation } from '../hooks/useEmailValidation';
 import { login } from '../lib/api';
 
 function SubmitButton() {
-  
   const { pending } = useFormStatus();
-  
+
   return (
     <button
-    type="submit"
-    disabled={pending}
-    className="p-2 bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
+      type="submit"
+      disabled={pending}
+      className="p-2 bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
     >
       {pending ? 'Logging in...' : 'Log In'}
     </button>
@@ -43,11 +42,11 @@ export default function LoginPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
 
-  if (name === 'email') {
-    validateEmail(value);
-  }
+    if (name === 'email') {
+      validateEmail(value);
+    }
   };
 
   return (
