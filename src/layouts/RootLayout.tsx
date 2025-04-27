@@ -1,8 +1,10 @@
 import { Outlet } from 'react-router-dom';
 
 import Navbar from '../components/Navbar';
+import { useTokenRefresh } from '../hooks/useTokenRefresh';
 
 export default function RootLayout() {
+  useTokenRefresh();
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-zinc-950 to-zinc-900 text-white font-sans">
       <Navbar />
