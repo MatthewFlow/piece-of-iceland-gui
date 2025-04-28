@@ -1,11 +1,17 @@
+import { refreshToken } from './auth';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5135';
 
-export async function apiFetch(path: string, options: RequestInit = {}) {
+async function fetchWithAuth(
+  path: string,
+  options: RequestInit = {},
+  retry = true
+): Promise<Response> {
   const token = localStorage.getItem('token');
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers as Record<string, string>,
+    ...(options.headers as Record<string, string>),
   };
 
   if (token) {
@@ -17,10 +23,22 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     headers,
   });
 
-  if (response.status === 401 && path !== '/auth/refresh') {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+  if (response.status === 401 && retry && path !== '/api/auth/refresh') {
+    try {
+      console.warn('Token expired. Attempting to refresh...');
+      await refreshToken();
+      return fetchWithAuth(path, options, false);
+    } catch (refreshError) {
+      console.error('Failed to refresh token. Logging out.');
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      throw new Error('Session expired');
+    }
   }
 
   return response;
+}
+
+export async function apiFetch(path: string, options: RequestInit = {}) {
+  return fetchWithAuth(path, options);
 }

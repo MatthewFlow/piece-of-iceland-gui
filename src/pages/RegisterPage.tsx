@@ -14,7 +14,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="p-2 bg-green-600 hover:bg-green-700 rounded disabled:opacity-50"
+      className="p-3 bg-green-600 hover:bg-green-700 rounded-lg text-white font-semibold disabled:opacity-50 transition-all"
     >
       {pending ? `Registering${username ? ` as ${username}` : ''}...` : 'Register'}
     </button>
@@ -66,8 +66,8 @@ export default function RegisterPage() {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
-          className="p-2 rounded bg-zinc-800 text-white"
         />
 
         {emailError && <p className="text-red-400 text-sm">{emailError}</p>}
@@ -78,8 +78,8 @@ export default function RegisterPage() {
           placeholder="Username"
           value={formData.username}
           onChange={handleChange}
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
-          className="p-2 rounded bg-zinc-800 text-white"
         />
 
         <input
@@ -88,8 +88,8 @@ export default function RegisterPage() {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
-          className="p-2 rounded bg-zinc-800 text-white"
         />
 
         {state.error && <p className="text-red-400 text-sm text-center">{state.error}</p>}

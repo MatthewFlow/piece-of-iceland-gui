@@ -26,15 +26,18 @@ export default function Navbar() {
         <nav className="flex items-center space-x-4 text-sm">
           {!isAuthenticated ? (
             <>
-              <Link to="/login" className="hover:underline">
+              <Link to="/login" className="hover:underline underline-offset-4 transition-colors">
                 Login
               </Link>
-              <Link to="/register" className="hover:underline">
+              <Link to="/register" className="hover:underline underline-offset-4 transition-colors">
                 Register
               </Link>
             </>
           ) : (
-            <button onClick={handleLogout} className="text-red-400 hover:underline">
+            <button
+              onClick={handleLogout}
+              className="text-red-400 hover:underline underline-offset-4 transition-colors"
+            >
               Logout
             </button>
           )}

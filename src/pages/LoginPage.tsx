@@ -12,7 +12,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="p-2 bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
+      className="p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold disabled:opacity-50 transition-all"
     >
       {pending ? 'Logging in...' : 'Log In'}
     </button>
@@ -60,8 +60,8 @@ export default function LoginPage() {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
-          className="p-2 rounded bg-zinc-800 text-white"
         />
 
         {emailError && <p className="text-red-400 text-sm">{emailError}</p>}
@@ -72,8 +72,8 @@ export default function LoginPage() {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
-          className="p-2 rounded bg-zinc-800 text-white"
         />
 
         {state.error && <p className="text-red-400 text-sm text-center">{state.error}</p>}
