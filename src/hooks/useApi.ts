@@ -18,7 +18,7 @@ export function useApi() {
       }
       const data = await response.json();
       return data as T;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || 'API error');
       throw err;
     } finally {

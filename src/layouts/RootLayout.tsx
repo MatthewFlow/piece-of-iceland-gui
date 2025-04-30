@@ -2,10 +2,8 @@ import { Outlet } from 'react-router-dom';
 
 import Navbar from '../components/Navbar';
 import { ToastProvider } from '../components/ToastProvider';
-import { useTokenRefresh } from '../hooks/useTokenRefresh';
 
 export default function RootLayout() {
-  useTokenRefresh();
   <ToastProvider />;
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-800 text-white font-sans">

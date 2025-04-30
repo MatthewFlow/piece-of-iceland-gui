@@ -1,84 +1,77 @@
+// src/pages/LoginPage.tsx
 import { useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { useEmailValidation } from '../hooks/useEmailValidation';
-import { login } from '../lib/api';
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold disabled:opacity-50 transition-all"
-    >
-      {pending ? 'Logging in...' : 'Log In'}
-    </button>
-  );
-}
+import { useSession } from '../hooks/useSession';
+import { login as loginApi } from '../lib/auth';
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const { emailError, validateEmail } = useEmailValidation();
   const navigate = useNavigate();
-  const [state, formAction] = useFormState(
-    async (prevState, formData) => {
-      const email = formData.get('email') as string;
-      const password = formData.get('password') as string;
+  const { login } = useSession();
 
-      try {
-        const data = await login(email, password);
-        localStorage.setItem('token', data.token);
-        navigate('/dashboard');
-        return { success: true, error: null };
-      } catch (error) {
-        return { success: false, error: 'Invalid email or password' };
-      }
-    },
-    { success: false, error: null }
-  );
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    if (name === 'email') {
-      validateEmail(value);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const data = await loginApi(form.email, form.password);
+      login(data.token);
+      console.log('prubuje tutaj: ', data.token);
+      navigate('/dashboard');
+    } catch (err: any) {
+      if (err?.response?.status === 401) {
+        toast.error('Invalid email or password');
+      } else {
+        toast.error('Login failed. Try again later.');
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form action={formAction} className="flex flex-col w-full max-w-sm gap-4">
-        <h1 className="text-2xl font-bold text-center">Login</h1>
+    <div className="flex items-center justify-center min-h-screen text-white">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 w-full max-w-sm p-6 bg-zinc-900 rounded-xl shadow-md"
+      >
+        <h1 className="text-2xl font-bold text-center">Log in</h1>
 
         <input
           name="email"
           type="email"
-          placeholder="Email"
-          value={formData.email}
+          value={form.email}
           onChange={handleChange}
-          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Email"
           required
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-
-        {emailError && <p className="text-red-400 text-sm">{emailError}</p>}
 
         <input
           name="password"
           type="password"
-          placeholder="Password"
-          value={formData.password}
+          value={form.password}
           onChange={handleChange}
-          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Password"
           required
+          className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        {state.error && <p className="text-red-400 text-sm text-center">{state.error}</p>}
-
-        <SubmitButton />
+        <button
+          type="submit"
+          disabled={submitting}
+          className="p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold disabled:opacity-50"
+        >
+          {submitting ? 'Logging in...' : 'Log in'}
+        </button>
       </form>
     </div>
   );
