@@ -31,8 +31,8 @@ async function fetchWithAuth(
     } catch (refreshError) {
       console.error('Failed to refresh token. Logging out.');
       localStorage.removeItem('token');
-      window.location.href = '/login';
-      throw new Error('Session expired');
+      return response;
+      // throw new Error('Session expired');
     }
   }
 

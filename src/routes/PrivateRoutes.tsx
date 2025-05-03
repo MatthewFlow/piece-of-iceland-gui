@@ -4,9 +4,9 @@ import { LoadingScreen } from '../components/LoadingScreen';
 import { useSession } from '../hooks/useSession';
 
 export default function PrivateRoutes() {
-  const { isAuthenticated, loading } = useSession();
+  const { isAuthenticated, loading, initialized } = useSession();
 
-  if (loading) {
+  if (!initialized || loading) {
     return <LoadingScreen />;
   }
 

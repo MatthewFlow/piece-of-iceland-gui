@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useEmailValidation } from '../hooks/useEmailValidation';
 import { useSession } from '../hooks/useSession';
-import { login, register } from '../lib/api';
+import { login, register } from '../lib/auth';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -28,14 +28,21 @@ export default function RegisterPage() {
     try {
       await register(form.email, form.username, form.password);
       const data = await login(form.email, form.password);
+
+      if (!data?.token) {
+        throw new Error('Invalid login response after registration');
+      }
+
       setSession(data.token);
       toast.success('Registered successfully!');
       navigate('/dashboard');
-    } catch (error: any) {
-      if (error?.response?.status === 409) {
+    } catch (err: any) {
+      const msg = err.message?.toLowerCase() || '';
+
+      if (msg.includes('already exists')) {
         toast.error('User with this email already exists');
       } else {
-        toast.error('Registration failed. Please try again.');
+        toast.error(err.message || 'Registration failed. Try again.');
       }
     } finally {
       setSubmitting(false);

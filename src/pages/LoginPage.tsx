@@ -1,20 +1,23 @@
-// src/pages/LoginPage.tsx
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+import { useEmailValidation } from '../hooks/useEmailValidation';
 import { useSession } from '../hooks/useSession';
 import { login as loginApi } from '../lib/auth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useSession();
-
+  const { emailError, validateEmail } = useEmailValidation();
   const [form, setForm] = useState({ email: '', password: '' });
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'email') validateEmail(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,11 +26,17 @@ export default function LoginPage() {
 
     try {
       const data = await loginApi(form.email, form.password);
+      console.log(data)
+      if (!data?.token) {
+        throw new Error(data.status);
+      }
+
       login(data.token);
-      console.log('prubuje tutaj: ', data.token);
+      toast.success('Logged in!');
       navigate('/dashboard');
-    } catch (err: any) {
-      if (err?.response?.status === 401) {
+    } catch (err: unknown) {
+      console.log(typeof Number(err));
+      if (Number(err) === 401) {
         toast.error('Invalid email or password');
       } else {
         toast.error('Login failed. Try again later.');
@@ -54,7 +63,7 @@ export default function LoginPage() {
           required
           className="p-3 rounded-lg bg-zinc-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-
+        {emailError && <p className="text-red-400 text-sm">{emailError}</p>}
         <input
           name="password"
           type="password"

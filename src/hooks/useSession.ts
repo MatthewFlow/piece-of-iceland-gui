@@ -1,31 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { refreshToken } from '../lib/auth';
-
 export function useSession() {
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (!storedToken) {
-      setLoading(false);
-      return;
+    if (storedToken) {
+      setToken(storedToken);
+      setIsAuthenticated(true);
     }
-
-    refreshToken()
-      .then(data => {
-        localStorage.setItem('token', data.token);
-        setToken(data.token);
-        setIsAuthenticated(true);
-      })
-      .catch(() => {
-        localStorage.removeItem('token');
-        setToken(null);
-        setIsAuthenticated(false);
-      })
-      .finally(() => setLoading(false));
+    setInitialized(true);
+    setLoading(false);
   }, []);
 
   const login = useCallback((newToken: string) => {
@@ -47,5 +35,6 @@ export function useSession() {
     loading,
     login,
     logout,
+    initialized,
   };
 }

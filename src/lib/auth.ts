@@ -5,11 +5,12 @@ export async function login(email: string, password: string) {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
+  // console.log(response);
 
   if (!response.ok) {
-    throw new Error('Invalid credentials');
+    return response
+    // throw new Error('Invalid credentials');
   }
-
   return response.json();
 }
 
@@ -20,7 +21,7 @@ export async function register(email: string, username: string, password: string
   });
 
   if (!response.ok) {
-    throw new Error('Registration failed');
+    // throw new Error('Registration failed');
   }
 
   return response.json();
@@ -30,9 +31,10 @@ export async function refreshToken() {
   const response = await apiFetch('/api/auth/refresh', {
     method: 'POST',
   });
-
+  // console.log(response);
   if (!response.ok) {
-    throw new Error('Failed to refresh token');
+    // throw new Error('Failed to refresh token');
+    return response
   }
 
   return response.json();
