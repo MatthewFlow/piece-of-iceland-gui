@@ -1,6 +1,6 @@
 import { refreshToken } from './auth';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5135';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5134';
 
 async function fetchWithAuth(
   path: string,
