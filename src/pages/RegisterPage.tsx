@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { useEmailValidation } from '../hooks/useEmailValidation';
 import { useSession } from '../hooks/useSession';
-import { login, register } from '../lib/auth';
+import { login as loginApi, register as registerApi } from '../lib/auth';
+import { ApiError } from '../lib/errors';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -26,23 +27,27 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      await register(form.email, form.username, form.password);
-      const data = await login(form.email, form.password);
+      const registerResponse = await registerApi(form.email, form.username, form.password);
 
-      if (!data?.token) {
-        throw new Error('Invalid login response after registration');
+      if (!registerResponse.ok) {
+        throw new ApiError(registerResponse.status, 'Registration failed');
       }
 
-      setSession(data.token);
+      const loginResponse = await loginApi(form.email, form.password);
+
+      if (!loginResponse.ok || !loginResponse.token) {
+        throw new ApiError(loginResponse.status, 'Login after registration failed');
+      }
+
+      setSession(loginResponse.token);
       toast.success('Registered successfully!');
       navigate('/dashboard');
-    } catch (err: any) {
-      const msg = err.message?.toLowerCase() || '';
-
-      if (msg.includes('already exists')) {
-        toast.error('User with this email already exists');
+    } catch (err: unknown) {
+      if (err?.status === 409) {
+        toast.error('User with this email already exists.');
       } else {
-        toast.error(err.message || 'Registration failed. Try again.');
+        toast.error('Registration failed. Please try again.');
+        console.error(err);
       }
     } finally {
       setSubmitting(false);

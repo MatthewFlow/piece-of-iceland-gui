@@ -5,13 +5,21 @@ export async function login(email: string, password: string) {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
-  // console.log(response);
 
-  if (!response.ok) {
-    return response
-    // throw new Error('Invalid credentials');
+  let token = null;
+  try {
+    const json = await response.json();
+    token = json?.token ?? null;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_) {
+    /* empty */
   }
-  return response.json();
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    token,
+  };
 }
 
 export async function register(email: string, username: string, password: string) {
@@ -20,22 +28,21 @@ export async function register(email: string, username: string, password: string
     body: JSON.stringify({ email, username, password }),
   });
 
-  if (!response.ok) {
-    // throw new Error('Registration failed');
-  }
-
-  return response.json();
+  return {
+    ok: response.ok,
+    status: response.status,
+  };
 }
 
 export async function refreshToken() {
   const response = await apiFetch('/api/auth/refresh', {
     method: 'POST',
   });
-  // console.log(response);
-  if (!response.ok) {
-    // throw new Error('Failed to refresh token');
-    return response
-  }
+
+  // if (!response.ok) {
+  //   // throw new Error('Failed to refresh token');
+  //   return response;
+  //   }
 
   return response.json();
 }

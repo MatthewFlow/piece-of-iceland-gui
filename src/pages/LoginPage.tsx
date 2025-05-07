@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEmailValidation } from '../hooks/useEmailValidation';
 import { useSession } from '../hooks/useSession';
 import { login as loginApi } from '../lib/auth';
+import { ApiError } from '../lib/errors';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -25,21 +26,19 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      const data = await loginApi(form.email, form.password);
-      console.log(data)
-      if (!data?.token) {
-        throw new Error(data.status);
+      const response = await loginApi(form.email, form.password);
+      if (!response.ok || !response.token) {
+        throw new ApiError(response.status, 'Login failed');
       }
-
-      login(data.token);
+      login(response.token);
       toast.success('Logged in!');
       navigate('/dashboard');
     } catch (err: unknown) {
-      console.log(typeof Number(err));
-      if (Number(err) === 401) {
+      if (err?.status === 401) {
         toast.error('Invalid email or password');
       } else {
         toast.error('Login failed. Try again later.');
+        console.log(err);
       }
     } finally {
       setSubmitting(false);
